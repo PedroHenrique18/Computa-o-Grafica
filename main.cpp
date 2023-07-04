@@ -7,6 +7,7 @@
 #include "sphere.h"
 
 #include <iostream>
+#include <fstream>
 
 // Implementação da função ray_color()
 color ray_color(const ray& r, const hittable& world, int depth) { 
@@ -37,8 +38,8 @@ hittable_list random_scene() {
     auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
     world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
 
-    for (int a = -11; a < 11; a++) {
-        for (int b = -11; b < 11; b++) {
+    for (int a = -2; a <8; a+=1) {
+        for (int b = -2; b < 8; b+=1) {
             auto choose_mat = random_double();
             point3 center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
 
@@ -97,7 +98,7 @@ int main() {
     auto dist_to_focus = 10.0;
     auto aperture = 0.1;
     camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
-
+    std::ofstream outfile("./output/image.ppm");
     // Renderização
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
@@ -111,10 +112,10 @@ int main() {
                 ray r = cam.get_ray(u, v);
                 pixel_color += ray_color(r, world, max_depth);
             }
-            write_color(std::cout, pixel_color, samples_per_pixel);
+            write_color(outfile, pixel_color, samples_per_pixel);
         }
     }
-
+    outfile.close();
     std::cerr << "\nConcluído.\n";
 }
 
